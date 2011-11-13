@@ -2,10 +2,9 @@
 
 
 class Employee():
-    # Class members
+    """ Employee class """
     def __init__(self, employee_no):
         self.number = employee_no
-        self.team_count = 0
         self.co_worker = []
         self.is_going = False
 
@@ -22,12 +21,11 @@ def find(func, list_seq):
         if func(list_item):
             return list_item
 
-
 def reduce_list(employee_list, check_favorite = False):
     """Fucntion for reducing the list of all employee to a minimum"""
     # Sort the list of employees by teamCount
     employee_list = sorted(employee_list,
-                          key=lambda empl : empl.team_count,
+                          key=lambda empl : len(empl.co_worker),
                           reverse=True)
 
     # Set all_checked flag to true
@@ -104,7 +102,6 @@ def retrieve_teams():
             for empl in empl_file_list:
                 if empl.number == employee_row[i]:
                     # print "Employee " + employee_row[i] + " found"
-                    empl.team_count += 1
                     employee_found = True
                     # Add the coworker to employees coworker list
                     if i == 0:
@@ -128,16 +125,14 @@ def retrieve_teams():
 
 
 
-# Get list of employees
-tot_list = retrieve_teams()
-# Reduce the list to a minimum of travelling employees
-default_list = reduce_list(tot_list)
+# Get list of employees and reduce the list to
+# a minimum of travelling employees
+default_list = reduce_list(retrieve_teams())
 
-# Get lsit of  employees
-tot_list = retrieve_teams()
-# Reduce the list to a minimum of travelling employees but
-# try to let the favorite employee to go as well
-favorite_list = reduce_list(tot_list, True)
+# Get a list of employees and reduce the list to
+# a minimum of travelling employees but with special
+# consideration to a favorite employe
+favorite_list = reduce_list(retrieve_teams(), True)
 
 # Check if the list with the favorite is shorter (or equal) than
 # the list with the optimal amount of employees.
