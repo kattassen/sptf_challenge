@@ -1,17 +1,43 @@
-""" puzzle.py """
+#
+# Author: Simon Furborg
+# Date:   2011-11-13
+#
+#
+# -bilateral puzzle-
+# Program asks for amount of teams and team members. The program
+# then calculates the least member possible for representing all
+# teams on a company conference. If possible the employee with
+# number 1009 shall be included in the list of traveling members.
+# Output shows the amount of members and their numbers.
+#
+# The input shall be given on the following form (example 3 teams):
+#    3
+#    1001 2001
+#    1009 2002
+#    1010 2001
+#
+# Output:
+#    2
+#    2001
+#    1009
+#
 
+import sys
+from copy import deepcopy
 
 class Employee():
-    """ Employee class """
+    """Employee class """
     def __init__(self, employee_no):
         self.number = employee_no
         self.co_worker = []
         self.is_going = False
 
     def add_co_worker(self, employee_no):
+        """Method for adding an item to co_worker list"""
         self.co_worker.append(employee_no)
 
     def del_co_worker(self, employee_no):
+        """Method for removing an item to co_worker list"""
         self.co_worker.remove(employee_no)
 
 def find(func, list_seq):
@@ -22,7 +48,7 @@ def find(func, list_seq):
             return list_item
 
 def reduce_list(employee_list, check_favorite = False):
-    """Fucntion for reducing the list of all employee to a minimum"""
+    """Function for reducing the list of all employees to a minimum"""
     # Sort the list of employees by teamCount
     employee_list = sorted(employee_list,
                           key=lambda empl : len(empl.co_worker),
@@ -31,11 +57,11 @@ def reduce_list(employee_list, check_favorite = False):
     # Find a employee that's not has been checked
     if check_favorite == True:
         # If check_favorite is set, set favorite employee to be checked
-        check_employee = find(lambda item: item.number == "1009", 
+        check_employee = find(lambda item: item.number == "1009",
                               employee_list)
     else:
         # Find employee with greatest team count that has not been checked
-        check_employee = find(lambda item: item.is_going == False, 
+        check_employee = find(lambda item: item.is_going == False,
                               employee_list)
 
     # If no employee is found return list. We are finished!
@@ -46,6 +72,9 @@ def reduce_list(employee_list, check_favorite = False):
     for co_worker in check_employee.co_worker:
         # Find the co worker in the list of employees
         employee = find(lambda item: item.number == co_worker, employee_list)
+
+        if employee == None:
+            continue
 
         # Remove the reference to the checked employee
         # from the co-worker list
@@ -66,64 +95,72 @@ def reduce_list(employee_list, check_favorite = False):
 
 def retrieve_teams():
     """Function that reads team members from file and returns them in a list """
-    # Open file with teams
-    team_file = open('./teams', 'r')
+    print "Print the number of teams and the members on team"
 
-    # Declare a list of emplyees
-    empl_file_list = []
+    employee_list_total = []
 
-    first_run = True
+    # Read how many teams that shall be given
+    stdin_input = sys.stdin.readline()
 
-    for line in team_file:
-        # Skip first row (amount of teams)
-        if first_run == True:
-            first_run = False
-            continue
+    # Test if input was numeric
+    try:
+        no_of_teams = int(stdin_input)
+    except ValueError:
+        print "Error: Input must be numeric. Program will exit!"
+        sys.exit()
 
-        employee_row = line.split()
+    for i in range(0, no_of_teams):
+        # Read a line from standard in
+        team_row = sys.stdin.readline()
+        # Split team into two members
+        team = team_row.split()
 
-        empl = 0
+        # Test if two members are given
+        if len(team) != 2:
+            print "Error: Two team members must be given: Program will exit!"
+            sys.exit()
+
+        temp_empl = 0
 
         # Loop both team members on row
         for i in range(0, 2):
             employee_found = False
 
-            for empl in empl_file_list:
-                if empl.number == employee_row[i]:
-                    # print "Employee " + employee_row[i] + " found"
+            for temp_empl in employee_list_total:
+                if temp_empl.number == team[i]:
                     employee_found = True
-                    # Add the coworker to employees coworker list
+                    # Add the coworker to employee coworker list
                     if i == 0:
-                        empl.add_co_worker(employee_row[1])
+                        temp_empl.add_co_worker(team[1])
                     else:
-                        empl.add_co_worker(employee_row[0])
+                        temp_empl.add_co_worker(team[0])
                     break
 
             if employee_found == False:
                 # Employee is not found in list, add it!
-                empl = Employee(line.split()[i])
-                # Add the coworker to employees coworker list
+                temp_empl = Employee(team[i])
+                # Add the coworker to employee coworker list
                 if i == 0:
-                    empl.add_co_worker(employee_row[1])
+                    temp_empl.add_co_worker(team[1])
                 else:
-                    empl.add_co_worker(employee_row[0])
-                empl_file_list.append(empl)
-                #print "Employee " + employee_row[i] + " added!"
+                    temp_empl.add_co_worker(team[0])
+                employee_list_total.append(temp_empl)
     # Return the list of employees
-    return empl_file_list
+    return employee_list_total
 
 
 # Get list of employees and reduce the list to
+total_list1 = retrieve_teams()
+total_list2 = deepcopy(total_list1)
+
 # a minimum of travelling employees
-default_list = reduce_list(retrieve_teams())
+default_list = reduce_list(total_list1)
 
 # Get a list of employees and reduce the list to
 # a minimum of travelling employees but with special
 # consideration to a favorite employe
-favorite_list = reduce_list(retrieve_teams(), True)
+favorite_list = reduce_list(total_list2, True)
 
-# Check if the list with the favorite is shorter (or equal) than
-# the list with the optimal amount of employees.
 # Print the shortest list
 if len(favorite_list) <= len(default_list):
     print len(favorite_list)
