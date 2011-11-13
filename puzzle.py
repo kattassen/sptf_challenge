@@ -28,29 +28,18 @@ def reduce_list(employee_list, check_favorite = False):
                           key=lambda empl : len(empl.co_worker),
                           reverse=True)
 
-    # Set all_checked flag to true
-    employee_found = False
-
     # Find a employee that's not has been checked
     if check_favorite == True:
         # If check_favorite is set, set favorite employee
-        # to be checked.
-        for check_employee in employee_list:
-            if check_employee.number == "1009":
-                employee_found = True
-                break
+        # to be checked
+        employee = find(lambda item: item.number == "1009", employee_list)
     else:
         # Find employee with greatest team count that
-        # has not been checked.
-        for check_employee in employee_list:
-            if check_employee.is_going == False:
-                # Set all_checked flag to False to indicate that
-                # we found
-                employee_found = True
-                break
+        # has not been checked
+        employee = find(lambda item: item.is_going == False, employee_list)
 
     # If no employee is found return list. We are finished!
-    if (employee_found == False):
+    if (employee == None):
         return employee_list
 
     # Loop all co workers of the employee found
@@ -122,7 +111,6 @@ def retrieve_teams():
                 #print "Employee " + employee_row[i] + " added!"
     # Return the list of employees
     return empl_file_list
-
 
 
 # Get list of employees and reduce the list to
