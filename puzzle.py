@@ -69,12 +69,12 @@ def reduce_list(employee_list, check_favorite = False):
     return reduce_list(employee_list)
 
 
-def retrive_teams():
+def retrieve_teams():
     # Open file with teams
     team_file = open('./teams', 'r')
 
     # Declare a list of emplyees
-    emplList = []
+    empl_file_list = []
 
     first_run = True
 
@@ -84,45 +84,44 @@ def retrive_teams():
             first_run = False
             continue
 
-        tempEmployee = line.split()
+        employee_row = line.split()
 
         empl = 0
 
         # Loop both team members
         for i in range(0, 2):
-            employeeFound = 0
+            employee_found = 0
 
-            for empl in emplList:
-                if empl.number == tempEmployee[i]:
-                    # print "Employee " + tempEmployee[i] + " found"
+            for empl in empl_file_list:
+                if empl.number == employee_row[i]:
+                    # print "Employee " + employee_row[i] + " found"
                     empl.team_count += 1
-                    employeeFound = 1
+                    employee_found = 1
                     if i == 0:
-                        empl.add_co_worker(tempEmployee[1])
+                        empl.add_co_worker(employee_row[1])
                     else:
-                        empl.add_co_worker(tempEmployee[0])
+                        empl.add_co_worker(employee_row[0])
                     break
 
-            if employeeFound == 0:
+            if employee_found == 0:
                 empl = Employee(line.split()[i])
                 if i == 0:
-                    empl.add_co_worker(tempEmployee[1])
+                    empl.add_co_worker(employee_row[1])
                 else:
-                    empl.add_co_worker(tempEmployee[0])
-                emplList.append(empl)
-                #print "Employee " + tempEmployee[i] + " added!"
-
-    return emplList
+                    empl.add_co_worker(employee_row[0])
+                empl_file_list.append(empl)
+                #print "Employee " + employee_row[i] + " added!"
+    return empl_file_list
 
 
 
 # Get list of employees
-tot_list = retrive_teams()
+tot_list = retrieve_teams()
 # Reduce the list to a minimum of travelling employees
 default_list = reduce_list(tot_list)
 
 # Get lsit of  employees
-tot_list = retrive_teams()
+tot_list = retrieve_teams()
 # Reduce the list to a minimum of travelling employees but
 # try to let the favorite employee to go as well
 favorite_list = reduce_list(tot_list, True)
