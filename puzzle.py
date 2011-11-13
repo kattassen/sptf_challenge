@@ -149,16 +149,15 @@ def retrieve_teams():
     return employee_list_total
 
 
-# Get list of employees and reduce the list to
+# Get a list of employees and make a deepcopy
 total_list1 = retrieve_teams()
 total_list2 = deepcopy(total_list1)
 
-# a minimum of travelling employees
+# Reduce the list to a minimum of travelling employees
 default_list = reduce_list(total_list1)
 
-# Get a list of employees and reduce the list to
-# a minimum of travelling employees but with special
-# consideration to a favorite employe
+# Reduce the list to a minimum of travelling employees with 
+# considereations to the favorite employee
 favorite_list = reduce_list(total_list2, True)
 
 # Print the shortest list
