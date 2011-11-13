@@ -1,4 +1,4 @@
-#
+""" puzzle.py """
 
 
 class Employee():
@@ -15,8 +15,16 @@ class Employee():
     def del_co_worker(self, employee_no):
         self.co_worker.remove(employee_no)
 
+def find(func, list_seq):
+    """Dynamic sarch function that returns the first item in list
+       where func(item) is True."""
+    for list_item in list_seq:
+        if func(list_item):
+            return list_item
+
 
 def reduce_list(employee_list, check_favorite = False):
+    """Fucntion for reducing the list of all employee to a minimum"""
     # Sort the list of employees by teamCount
     employee_list = sorted(employee_list,
                           key=lambda empl : empl.team_count,
@@ -37,7 +45,7 @@ def reduce_list(employee_list, check_favorite = False):
         # Find employee with greatest team count that
         # has not been checked.
         for check_employee in employee_list:
-            if check_employee.is_going == 0:
+            if check_employee.is_going == False:
                 # Set all_checked flag to False to indicate that
                 # we found
                 employee_found = True
@@ -50,17 +58,17 @@ def reduce_list(employee_list, check_favorite = False):
     # Loop all co workers of the employee found
     for co_worker in check_employee.co_worker:
         # Find the co worker in the list of employees
-        for employee in employee_list:
-            if employee.number == co_worker:
-                # Remove the reference to the checked employee
-                # from the co-worker list
-                for co_worker2 in employee.co_worker:
-                    if (co_worker2 == check_employee.number):
-                        employee.del_co_worker(co_worker2)
-                # Remove this co-worker if it does not
-                # belong to any more team
-                if len(employee.co_worker) == 0:
-                    employee_list.remove(employee)
+        employee = find(lambda item: item.number == co_worker, employee_list)
+
+        # Remove the reference to the checked employee
+        # from the co-worker list
+        for co_worker2 in employee.co_worker:
+            if (co_worker2 == check_employee.number):
+                employee.del_co_worker(co_worker2)
+        # Remove this co-worker if it does not
+        # belong to any more team
+        if len(employee.co_worker) == 0:
+            employee_list.remove(employee)
 
     # Mark this employee to be finished
     check_employee.is_going = True
@@ -70,6 +78,7 @@ def reduce_list(employee_list, check_favorite = False):
 
 
 def retrieve_teams():
+    """Function that reads team members from file and returns them in a list """
     # Open file with teams
     team_file = open('./teams', 'r')
 
@@ -79,7 +88,7 @@ def retrieve_teams():
     first_run = True
 
     for line in team_file:
-        # Skip first row
+        # Skip first row (amount of teams)
         if first_run == True:
             first_run = False
             continue
@@ -88,29 +97,33 @@ def retrieve_teams():
 
         empl = 0
 
-        # Loop both team members
+        # Loop both team members on row
         for i in range(0, 2):
-            employee_found = 0
+            employee_found = False
 
             for empl in empl_file_list:
                 if empl.number == employee_row[i]:
                     # print "Employee " + employee_row[i] + " found"
                     empl.team_count += 1
-                    employee_found = 1
+                    employee_found = True
+                    # Add the coworker to employees coworker list
                     if i == 0:
                         empl.add_co_worker(employee_row[1])
                     else:
                         empl.add_co_worker(employee_row[0])
                     break
 
-            if employee_found == 0:
+            if employee_found == False:
+                # Employee is not found in list, add it!
                 empl = Employee(line.split()[i])
+                # Add the coworker to employees coworker list
                 if i == 0:
                     empl.add_co_worker(employee_row[1])
                 else:
                     empl.add_co_worker(employee_row[0])
                 empl_file_list.append(empl)
                 #print "Employee " + employee_row[i] + " added!"
+    # Return the list of employees
     return empl_file_list
 
 
