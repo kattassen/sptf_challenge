@@ -30,16 +30,16 @@ def reduce_list(employee_list, check_favorite = False):
 
     # Find a employee that's not has been checked
     if check_favorite == True:
-        # If check_favorite is set, set favorite employee
-        # to be checked
-        employee = find(lambda item: item.number == "1009", employee_list)
+        # If check_favorite is set, set favorite employee to be checked
+        check_employee = find(lambda item: item.number == "1009", 
+                              employee_list)
     else:
-        # Find employee with greatest team count that
-        # has not been checked
-        employee = find(lambda item: item.is_going == False, employee_list)
+        # Find employee with greatest team count that has not been checked
+        check_employee = find(lambda item: item.is_going == False, 
+                              employee_list)
 
     # If no employee is found return list. We are finished!
-    if (employee == None):
+    if (check_employee == None):
         return employee_list
 
     # Loop all co workers of the employee found
