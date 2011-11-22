@@ -78,7 +78,7 @@ def reduce_list(employee_list, check_favorite = False):
             # Find the employee with greates team count
             for employee_max in employee_list:
                 if len(employee_max.co_worker_list) > old_max:
-                    old_max = employee_max.co_worker_list
+                    old_max = len(employee_max.co_worker_list)
                     employee = employee_max
         else:
             # Pick the first employee in list which is the favorite
