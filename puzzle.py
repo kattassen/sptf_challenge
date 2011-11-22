@@ -54,38 +54,39 @@ def find(func, list_seq):
             return list_item
 
 def reduce_list(employee_list, check_favorite = False):
-    """Function for reducing the list of all employees to a minimum"""
-    
+    """Function for reducing the list of all employees to a minimum"""    
     # Introduce a list for all traveling employees
     traveling_employee_list = []
 
     # Find a employee that's not has been checked
     if check_favorite == True:
-        # If check_favorite is set, set favorite employee to be checked
+        # If check_favorite is set, find favorite employee to be checked
         check_favorite_employee = find(lambda item: item.number == "1009",
                               employee_list)
         
         if check_favorite_employee != None:
-            # Move the this employee to first position in list
-            employee_list.remove(check_favorite_employee)
-            employee_list.insert(0, check_favorite_employee)
+            # Favorite not found
+            check_favorite = False
         
     # Loop all employees in list
     #for i in range(0, len(employee_list)):
     while len(employee_list) != 0:
         # Sort the list only if check favorite is False
         if check_favorite == False:
-            # Sort the list of employees by teamCount
-            employee_list = sorted(employee_list,
-                                   key=lambda empl : len(empl.co_worker_list),
-                                    reverse=True)
-    
-        check_favorite = False
-        
-        # Pick the first employee in list
-        employee = employee_list[0]
+            old_max = 0
+            
+            # Find the employee with greates team count
+            for employee_max in employee_list:
+                if len(employee_max.co_worker_list) > old_max:
+                    old_max = employee_max.co_worker_list
+                    employee = employee_max
+        else:
+            # Pick the first employee in list which is the favorite
+            employee = check_favorite_employee
 
-        # Is is_going flag set: put employee to traveling list
+        check_favorite = False
+
+        # Add this to traveling list
         traveling_employee_list.append(employee.number)
 
         # Remove employee from list
@@ -166,7 +167,7 @@ total_list2 = total_list1[:]
 
 # Reduce the list to a minimum of travelling employees
 default_list = reduce_list(total_list1)
-print ("-----")
+
 # Restore the list for another run
 for item in total_list2:
     item.restore_object()
@@ -175,8 +176,6 @@ for item in total_list2:
 # considereations to the favorite employee
 favorite_list = reduce_list(total_list2, True)
 
-print len(favorite_list)
-print len(default_list)
 # Print the shortest list
 if len(favorite_list) <= len(default_list):
     print len(favorite_list)
