@@ -31,7 +31,7 @@ class Employee():
         self.number = employee_no
         self.co_worker_list = []
         self.original_co_worker_list = []
-        self.is_going = True
+        self.checked = False
 
     def add_co_worker(self, employee):
         """Method for adding an item to co_worker list"""
@@ -45,7 +45,7 @@ class Employee():
     def restore_object(self):
         """Method for restoring the object to its initial state"""
         self.co_worker_list = self.original_co_worker_list
-        self.is_going = True
+        self.checked = True
         
 def find(func, list_seq):
     """Dynamic sarch function that returns the first item in list
@@ -56,10 +56,6 @@ def find(func, list_seq):
 
 def reduce_list(employee_list, check_favorite = False):
     """Function for reducing the list of all employees to a minimum"""
-    # Sort the list of employees by teamCount
-    employee_list = sorted(employee_list,
-                          key=lambda empl : len(empl.co_worker_list),
-                          reverse=True)
     
     # Introduce a list for all traveling employees
     traveling_employee_list = []
@@ -75,24 +71,35 @@ def reduce_list(employee_list, check_favorite = False):
             employee_list.insert(0,check_favorite_employee)
         
     # Loop all employees in list
-    for employee in employee_list:
+    for i in range(0, len(employee_list)):
+        if check_favorite == False:
+            # Sort the list of employees by teamCount
+            employee_list = sorted(employee_list,
+                                   key=lambda empl : len(empl.co_worker_list),
+                                    reverse=True)
+                                    
+        check_favorite = False
+        
+        employee = employee_list[0] 
+        print "CHECK EMPLOYEE   " employee.number
         # Loop all co workers of the employee found
-        if employee.is_going == True:
+        if employee.checked == False:
             # Is is_going flag set: put employee to traveling list
             traveling_employee_list.append(employee.number)
+            employee.checked = True
+            
+            for co_worker in employee.co_worker_list:
+                # Delete the reference to the employee
+                co_worker.del_co_worker(employee)
+            
+                # Remove the co_worker from employee_list if it has
+                # no co_workers left
+                if len(co_worker.co_worker_list) == 0:
+                    co_worker.checked = True
         else:
             # Otherwise skip this employee
             continue
         
-        for co_worker in employee.co_worker_list:
-            # Delete the reference to the employee
-            co_worker.del_co_worker(employee)
-            
-            # Remove the co_worker from employee_list if it has
-            # no co_workers left
-            if len(co_worker.co_worker_list) == 0:
-                co_worker.is_going = False                
-
     return traveling_employee_list
 
 
