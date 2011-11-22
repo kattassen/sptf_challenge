@@ -45,7 +45,7 @@ class Employee():
     def restore_object(self):
         """Method for restoring the object to its initial state"""
         self.co_worker_list = self.original_co_worker_list
-        self.checked = True
+        self.checked = False
         
 def find(func, list_seq):
     """Dynamic sarch function that returns the first item in list
@@ -81,11 +81,13 @@ def reduce_list(employee_list, check_favorite = False):
         check_favorite = False
         
         employee = employee_list[0] 
-        print "CHECK EMPLOYEE   " employee.number
         # Loop all co workers of the employee found
         if employee.checked == False:
             # Is is_going flag set: put employee to traveling list
             traveling_employee_list.append(employee.number)
+
+            employee_list.remove(employee)
+            
             employee.checked = True
             
             for co_worker in employee.co_worker_list:
@@ -162,18 +164,19 @@ def retrieve_teams():
     return employee_list_total
 
 # Get a list of employee
-total_list = retrieve_teams()
+total_list1 = retrieve_teams()
+total_list2 = total_list1[:]
 
 # Reduce the list to a minimum of travelling employees
-default_list = reduce_list(total_list)
-
+default_list = reduce_list(total_list1)
+print ("-----")
 # Restore the list for another run
-for item in total_list:
+for item in total_list2:
     item.restore_object()
 
 # Reduce the list to a minimum of travelling employees with 
 # considereations to the favorite employee
-favorite_list = reduce_list(total_list, True)
+favorite_list = reduce_list(total_list2, True)
 
 print len(favorite_list)
 print len(default_list)
