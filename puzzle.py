@@ -63,8 +63,8 @@ def reduce_list(employee_list, check_favorite = False):
         # If check_favorite is set, find favorite employee to be checked
         check_favorite_employee = find(lambda item: item.number == "1009",
                               employee_list)
-        
-        if check_favorite_employee != None:
+
+        if check_favorite_employee == None:
             # Favorite not found
             check_favorite = False
         
