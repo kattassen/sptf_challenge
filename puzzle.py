@@ -23,7 +23,6 @@
 #
 
 import sys
-from copy import deepcopy
 
 class Employee():
     """Employee class """
@@ -67,43 +66,41 @@ def reduce_list(employee_list, check_favorite = False):
                               employee_list)
         
         if check_favorite_employee != None:
+            # Move the this employee to first position in list
             employee_list.remove(check_favorite_employee)
-            employee_list.insert(0,check_favorite_employee)
+            employee_list.insert(0, check_favorite_employee)
         
     # Loop all employees in list
-    for i in range(0, len(employee_list)):
+    #for i in range(0, len(employee_list)):
+    while len(employee_list) != 0:
+        # Sort the list only if check favorite is False
         if check_favorite == False:
             # Sort the list of employees by teamCount
             employee_list = sorted(employee_list,
                                    key=lambda empl : len(empl.co_worker_list),
                                     reverse=True)
-                                    
+    
         check_favorite = False
         
-        employee = employee_list[0] 
-        # Loop all co workers of the employee found
-        if employee.checked == False:
-            # Is is_going flag set: put employee to traveling list
-            traveling_employee_list.append(employee.number)
+        # Pick the first employee in list
+        employee = employee_list[0]
 
-            employee_list.remove(employee)
+        # Is is_going flag set: put employee to traveling list
+        traveling_employee_list.append(employee.number)
+
+        # Remove employee from list
+        employee_list.remove(employee)
             
-            employee.checked = True
-            
-            for co_worker in employee.co_worker_list:
-                # Delete the reference to the employee
-                co_worker.del_co_worker(employee)
-            
-                # Remove the co_worker from employee_list if it has
-                # no co_workers left
-                if len(co_worker.co_worker_list) == 0:
-                    co_worker.checked = True
-        else:
-            # Otherwise skip this employee
-            continue
+        for co_worker in employee.co_worker_list:
+            # Delete the reference to the employee
+            co_worker.del_co_worker(employee)
+        
+            # Remove the co_worker from employee_list if it has
+            # no co_workers left
+            if len(co_worker.co_worker_list) == 0:            
+                employee_list.remove(co_worker)
         
     return traveling_employee_list
-
 
 def retrieve_teams():
     """Function that reads team members from file and returns them in a list """
