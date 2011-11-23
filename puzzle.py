@@ -202,27 +202,32 @@ def retrieve_teams():
     # Return the list of employees
     return employee_list_total
 
-# Get a list of employee
-total_list1 = retrieve_teams()
-total_list2 = total_list1[:]
-
-# Reduce the list to a minimum of travelling employees
-default_list = reduce_list(total_list1)
-
-# Restore the list for another run
-for item in total_list2:
-    item.restore_object()
-
-# Reduce the list to a minimum of travelling employees with 
-# considereations to the favorite employee
-favorite_list = reduce_list(total_list2, True)
-
-# Print the shortest list
-if len(favorite_list) <= len(default_list):
-    print len(favorite_list)
-    for item in favorite_list:
-        print item
-else:
-    print len(default_list)
-    for item in default_list:
-        print item
+def main():
+    
+    # Get a list of employee
+    total_list1 = retrieve_teams()
+    total_list2 = total_list1[:]
+    
+    # Reduce the list to a minimum of travelling employees
+    default_list = reduce_list(total_list1)
+    
+    # Restore the list for another run
+    for item in total_list2:
+        item.restore_object()
+    
+    # Reduce the list to a minimum of travelling employees with 
+    # considereations to the favorite employee
+    favorite_list = reduce_list(total_list2, True)
+    
+    # Print the shortest list
+    if len(favorite_list) <= len(default_list):
+        print len(favorite_list)
+        for item in favorite_list:
+            print item
+    else:
+        print len(default_list)
+        for item in default_list:
+            print item
+            
+if __name__ == "__main__":
+    main()
