@@ -21,7 +21,6 @@
 #    2001
 #    1009
 #
-
 import sys
 
 class Employee():
@@ -138,6 +137,11 @@ def retrieve_teams():
     """Function that reads team members from file and returns them in a list """
     #print "Print the number of teams and the members on team"
     employee_list_total = []
+    employee_number_list = []
+
+    # List for keeping used numbers
+    for temp in range(1000, 3000):
+        employee_number_list.append([None, False])        
 
     # Read how many teams that shall be given
     stdin_input = sys.stdin.readline()
@@ -153,7 +157,7 @@ def retrieve_teams():
             input_rows.append(sys.stdin.readline())
                 
     except ValueError:
-        print "Error: Input must be numeric. Program will exit!"
+        print "Error: Wrong input format"
         sys.exit()
 
     for row in input_rows:
@@ -167,20 +171,26 @@ def retrieve_teams():
 
         temp_empl = [0, 0]
         
-        # Loop both team members on row and check if the are in the list
-        for i in range(0, 2):
-            employee_found = 0
-                        
-            for temp_empl[i] in employee_list_total:
-                if temp_empl[i].number == team[i]:
-                    employee_found = 1
-                    break
-                
-            if temp_empl[i] == 0 or employee_found == 0:
-                # Employee is not found in list, add it!
-                temp_empl[i] = Employee(team[i])
-                employee_list_total.append(temp_empl[i])
-
+        try :
+            # Loop both team members on row and check if the are in the list
+            for i in range(0, 2):
+                # Check for team on position teamnumber-1000
+                if employee_number_list[int(team[i])-1000][1] == False:
+                    # Employee is not found in list, add it!
+                    temp_empl[i] = Employee(team[i])                
+                    employee_list_total.append(temp_empl[i])
+                    # Set employee to been found
+                    employee_number_list[int(team[i])-1000][1] = True
+                    # Set reference to the employee object 
+                    employee_number_list[int(team[i])-1000][0] = temp_empl[i]
+                else:
+                    # Retrive the employee object
+                    temp_empl[i] = employee_number_list[int(team[i])-1000][0]
+                    
+        except ValueError:
+            print "Error: Input must be numeric. Program will exit!"
+            sys.exit()
+            
         i = 0                    
         for i in range(0, 2):
             # Add co_workers to respectivly employee
