@@ -87,11 +87,20 @@ def reduce_list(employee_list, check_favorite=False):
         if check_favorite == False:
             # Find an employee to check
             for employee in employee_list:
-                if len(employee.co_worker_list) != counts_list[-1][0]:
+                length = len(employee.co_worker_list)
+                
+                # Remove this item if it has no co_workers
+                if length == 0:
+                    employee_list.remove(employee)
+                    continue
+                # Choose this if it has maximum co_workers
+                elif length != counts_list[-1][0]:
                     continue
 
-                counts_list[-1][1] -= 1                
-
+                counts_list[-1][1] -= 1           
+                break
+            
+            if len(employee.co_worker_list) == 0:
                 break
         else:
             # Pick the first employee in list which is the favorite
@@ -125,11 +134,6 @@ def reduce_list(employee_list, check_favorite=False):
 
             # Remove the co_worker from employees co_worker list
             co_worker.del_co_worker(employee)
-
-            # Remove the co_worker from employee_list if it has
-            # no co_workers left
-            if len(co_worker.co_worker_list) == 0:
-                employee_list.remove(co_worker)
 
     return traveling_employee_list
 
