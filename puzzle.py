@@ -30,7 +30,6 @@ class Employee():
         self.number = employee_no
         self.co_worker_list = []
         self.original_co_worker_list = []
-        self.checked = False
 
     def add_co_worker(self, employee):
         """Method for adding an item to co_worker list"""
@@ -44,7 +43,6 @@ class Employee():
     def restore_object(self):
         """Method for restoring the object to its initial state"""
         self.co_worker_list = self.original_co_worker_list
-        self.checked = False
         
 def find(func, list_seq):
     """Dynamic sarch function that returns the first item in list
@@ -52,9 +50,25 @@ def find(func, list_seq):
     for list_item in list_seq:
         if func(list_item):
             return list_item
+        
+def reduce_list(employee_list, check_favorite=False):
+    """Function for reducing the list of all employees to a minimum"""
+    # Sort the list of employees by teamCount
+    employee_list = sorted(employee_list,
+                          key=lambda empl : len(empl.co_worker_list),
+                          reverse=True)
 
-def reduce_list(employee_list, check_favorite = False):
-    """Function for reducing the list of all employees to a minimum"""    
+    counts_list = []
+
+    # Initate a list with all possible team counts
+    for i in range(0, len(employee_list[0].co_worker_list)+1):
+        counts_list.append([i, 0])
+
+    # Check all employees
+    for empl in employee_list:
+        # Add correct teamcounts to the list
+        counts_list[len(empl.co_worker_list)][1] += 1        
+
     # Introduce a list for all traveling employees
     traveling_employee_list = []
 
@@ -62,27 +76,33 @@ def reduce_list(employee_list, check_favorite = False):
     if check_favorite == True:
         # If check_favorite is set, find favorite employee to be checked
         check_favorite_employee = find(lambda item: item.number == "1009",
-                              employee_list)
-
+                                       employee_list)
+        
         if check_favorite_employee == None:
             # Favorite not found
             check_favorite = False
-        
+
     # Loop all employees in list
-    #for i in range(0, len(employee_list)):
     while len(employee_list) != 0:
         # Sort the list only if check favorite is False
         if check_favorite == False:
-            old_max = 0
-            
-            # Find the employee with greates team count
-            for employee_max in employee_list:
-                if len(employee_max.co_worker_list) > old_max:
-                    old_max = len(employee_max.co_worker_list)
-                    employee = employee_max
+            # Find an employee to check
+            for employee in employee_list:
+                if len(employee.co_worker_list) != counts_list[-1][0]:
+                    continue
+
+                counts_list[-1][1] -= 1                
+
+                break
         else:
             # Pick the first employee in list which is the favorite
             employee = check_favorite_employee
+
+            counts_list[len(employee.co_worker_list)][1] -= 1
+
+        # Remove all empty counts in end of list
+        while counts_list[-1][1] < 1:
+            counts_list.pop(-1)
 
         check_favorite = False
 
@@ -91,16 +111,27 @@ def reduce_list(employee_list, check_favorite = False):
 
         # Remove employee from list
         employee_list.remove(employee)
-            
+
         for co_worker in employee.co_worker_list:
             # Delete the reference to the employee
+
+            length = len(co_worker.co_worker_list)
+
+            counts_list[length][1] -= 1
+            counts_list[length - 1][1] += 1
+
+            # Removie al empty counts in end of list
+            while counts_list[-1][1] < 1:
+                counts_list.pop(-1)
+
+            # Remove the co_worker from employees co_worker list
             co_worker.del_co_worker(employee)
-        
+
             # Remove the co_worker from employee_list if it has
             # no co_workers left
-            if len(co_worker.co_worker_list) == 0:            
+            if len(co_worker.co_worker_list) == 0:
                 employee_list.remove(co_worker)
-        
+
     return traveling_employee_list
 
 def retrieve_teams():
